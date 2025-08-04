@@ -1,0 +1,1641 @@
+openapi: 3.0.0
+info:
+  title: Xero Accounting API
+  version: 9.0.0
+  termsOfService: https://developer.xero.com/xero-developer-platform-terms-conditions/
+  contact:
+    name: Xero Platform Team
+    email: api@xero.com
+    url: https://developer.xero.com
+servers:
+  - description: The Xero Accounting API exposes accounting and related functions of the main Xero application and can be used for a variety of purposes such as creating transactions like invoices and credit notes, right through to extracting accounting data via our reports endpoint.
+    url: https://api.xero.com/api.xro/2.0
+paths:
+  /Contacts:
+    parameters:
+      - $ref: "#/components/parameters/requiredHeader"
+    get:
+      security:
+        - OAuth2:
+            - accounting.contacts
+            - accounting.contacts.read
+      tags:
+        - Accounting
+      operationId: getContacts
+      summary: Retrieves all contacts in a Xero organisation
+      parameters:
+        - $ref: "#/components/parameters/ifModifiedSince"
+        - in: query
+          name: where
+          description: Filter by an any element
+          example: ContactStatus==&quot;ACTIVE&quot;
+          x-example-csharp: ContactStatus==\&quot;ACTIVE\&quot;
+          x-example-java: ContactStatus==&quot;&apos; + Contact.ContactStatusEnum.ACTIVE + &apos;&quot;
+          x-example-php: ContactStatus==&quot;&apos; . \XeroAPI\XeroPHP\Models\Accounting\Contact::CONTACT_STATUS_ACTIVE . &apos;&quot;
+          x-example-ruby: ContactStatus==#{XeroRuby::Accounting::Contact::ACTIVE}
+          schema:
+            type: string
+        - in: query
+          name: order
+          description: Order by an any element
+          example: Name ASC
+          schema:
+            type: string
+        - in: query
+          name: IDs
+          x-snake: ids
+          description: Filter by a comma separated list of ContactIDs. Allows you to retrieve a specific set of contacts in a single call.
+          style: form
+          explode: false
+          example: "&quot;00000000-0000-0000-0000-000000000000&quot;"
+          x-example-java: Arrays.asList(UUID.fromString("00000000-0000-0000-0000-000000000000"))
+          x-example-php: "&quot;00000000-0000-0000-0000-000000000000&quot;"
+          x-example-csharp: new List&lt;Guid&gt;{Guid.Parse("00000000-0000-0000-0000-000000000000")};
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+        - in: query
+          name: page
+          description: e.g. page=1 - Up to 100 contacts will be returned in a single API call.
+          example: 1
+          schema:
+            type: integer
+        - in: query
+          name: includeArchived
+          x-snake: include_archived
+          description: e.g. includeArchived=true - Contacts with a status of ARCHIVED will be included in the response
+          example: true
+          x-example-python: "True"
+          schema:
+            type: boolean
+        - $ref: "#/components/parameters/summaryOnly"
+        - in: query
+          name: searchTerm
+          x-snake: search_term
+          description: Search parameter that performs a case-insensitive text search across the Name, FirstName, LastName, ContactNumber and EmailAddress fields.
+          example: Joe Bloggs
+          schema:
+            type: string
+        - $ref: "#/components/parameters/pageSize"
+      responses:
+        "200":
+          description: Success - return response of type Contacts array with 0 to N Contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contacts"
+              example:
+                Id: 04e93d48-e72f-4775-b7dd-15a041fab972
+                Status: OK
+                ProviderName: Xero API Partner
+                DateTimeUTC: /Date(1551399323399)/
+                pagination:
+                  page: 1
+                  pageSize: 100
+                  pageCount: 1
+                  itemCount: 2
+                Contacts:
+                  - ContactID: 5cc8cf28-567e-4d43-b287-687cfcaec47c
+                    ContactStatus: ACTIVE
+                    Name: Katherine Warren
+                    FirstName: Katherine
+                    LastName: Warren
+                    CompanyNumber: NumberBusiness1234
+                    EmailAddress: kat.warren@clampett.com
+                    BankAccountDetails: ""
+                    Addresses:
+                      - AddressType: STREET
+                        City: ""
+                        Region: ""
+                        PostalCode: ""
+                        Country: ""
+                      - AddressType: POBOX
+                        AddressLine1: ""
+                        AddressLine2: ""
+                        AddressLine3: ""
+                        AddressLine4: ""
+                        City: Palo Alto
+                        Region: CA
+                        PostalCode: "94020"
+                        Country: United States
+                    Phones:
+                      - PhoneType: DDI
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                      - PhoneType: DEFAULT
+                        PhoneNumber: 847-1294
+                        PhoneAreaCode: (626)
+                        PhoneCountryCode: ""
+                      - PhoneType: FAX
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                      - PhoneType: MOBILE
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                    UpdatedDateUTC: /Date(1503348544227+0000)/
+                    ContactGroups: []
+                    IsSupplier: true
+                    IsCustomer: true
+                    SalesDefaultLineAmountType: INCLUSIVE
+                    PurchasesDefaultLineAmountType: INCLUSIVE
+                    Balances:
+                      AccountsReceivable:
+                        Outstanding: 760.00
+                        Overdue: 920.00
+                      AccountsPayable:
+                        Outstanding: 231.60
+                        Overdue: 360.00
+                    ContactPersons: []
+                    HasAttachments: false
+                    HasValidationErrors: false
+                  - ContactID: 3ec601ad-eddc-4ccb-a8ac-736e88293b1b
+                    ContactStatus: ACTIVE
+                    Name: Lisa Parker
+                    FirstName: Lisa
+                    LastName: Parker
+                    EmailAddress: lparker@parkerandco.com
+                    BankAccountDetails: ""
+                    Addresses:
+                      - AddressType: STREET
+                        City: ""
+                        Region: ""
+                        PostalCode: ""
+                        Country: ""
+                      - AddressType: POBOX
+                        AddressLine1: ""
+                        AddressLine2: ""
+                        AddressLine3: ""
+                        AddressLine4: ""
+                        City: Anchorage
+                        Region: AK
+                        PostalCode: "99501"
+                        Country: United States
+                    Phones:
+                      - PhoneType: DDI
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                      - PhoneType: DEFAULT
+                        PhoneNumber: 266-3583
+                        PhoneAreaCode: (510)
+                        PhoneCountryCode: ""
+                      - PhoneType: FAX
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                      - PhoneType: MOBILE
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                    UpdatedDateUTC: /Date(1503348546760+0000)/
+                    ContactGroups: []
+                    IsSupplier: false
+                    IsCustomer: false
+                    ContactPersons: []
+                    HasAttachments: false
+                    HasValidationErrors: false
+    put:
+      security:
+        - OAuth2:
+            - accounting.contacts
+      tags:
+        - Accounting
+      operationId: createContacts
+      summary: Creates multiple contacts (bulk) in a Xero organisation
+      x-hasAccountingValidationError: true
+      x-example:
+        - phone:
+          is_object: true
+          key: phone
+          keyPascal: Phone
+        - phoneNumber:
+          key: phoneNumber
+          keyPascal: PhoneNumber
+          keySnake: phone_number
+          default: 555-1212
+          object: phone
+        - phoneType:
+          is_last: true
+          nonString: true
+          key: phoneType
+          keyPascal: PhoneType
+          keySnake: phone_type
+          default: MOBILE
+          php: XeroAPI\XeroPHP\Models\Accounting\Phone::PHONE_TYPE_MOBILE
+          node: Phone.PhoneTypeEnum.MOBILE
+          ruby: XeroRuby::Accounting::PhoneType::MOBILE
+          python_string: MOBILE
+          java: com.xero.models.accounting.Phone.PhoneTypeEnum.MOBILE
+          csharp: Phone.PhoneTypeEnum.MOBILE
+          object: phone
+        - phones:
+          is_list: true
+          key: phones
+          keyPascal: Phone
+        - add_phone:
+          is_last: true
+          is_list_add: true
+          key: phones
+          keyPascal: Phones
+          object: phone
+        - contact:
+          is_object: true
+          key: contact
+          keyPascal: Contact
+        - name:
+          key: name
+          keyPascal: Name
+          default: Bruce Banner
+          object: contact
+        - emailAddress:
+          key: emailAddress
+          keyPascal: EmailAddress
+          keySnake: email_address
+          default: hulk@avengers.com
+          object: contact
+        - set_phones:
+          is_last: true
+          is_variable: true
+          nonString: true
+          key: phones
+          keyPascal: Phones
+          default: phones
+          object: contact
+        - contacts:
+          is_object: true
+          key: contacts
+          keyPascal: Contacts
+        - add_contact:
+          is_last: true
+          is_array_add: true
+          key: contacts
+          keyPascal: Contacts
+          java: Contacts
+          csharp: Contact
+          object: contact
+      parameters:
+        - $ref: "#/components/parameters/summarizeErrors"
+        - $ref: "#/components/parameters/idempotencyKey"
+      responses:
+        "200":
+          description: Success - return response of type Contacts array with newly created Contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contacts"
+              example:
+                Id: e997d6d7-6dad-4458-beb8-d9c1bf7f2edf
+                Status: OK
+                ProviderName: Xero API Partner
+                DateTimeUTC: /Date(1551399321121)/
+                Contacts:
+                  - ContactID: 3ff6d40c-af9a-40a3-89ce-3c1556a25591
+                    ContactStatus: ACTIVE
+                    CompanyNumber: NumberBusiness1234
+                    Name: Foo9987
+                    EmailAddress: sid32476@blah.com
+                    BankAccountDetails: ""
+                    Addresses:
+                      - AddressType: STREET
+                        City: ""
+                        Region: ""
+                        PostalCode: ""
+                        Country: ""
+                      - AddressType: POBOX
+                        City: ""
+                        Region: ""
+                        PostalCode: ""
+                        Country: ""
+                    Phones:
+                      - PhoneType: DEFAULT
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                      - PhoneType: DDI
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                      - PhoneType: FAX
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                      - PhoneType: MOBILE
+                        PhoneNumber: 555-1212
+                        PhoneAreaCode: "415"
+                        PhoneCountryCode: ""
+                    UpdatedDateUTC: /Date(1551399321043+0000)/
+                    ContactGroups: []
+                    IsSupplier: false
+                    IsCustomer: false
+                    SalesDefaultLineAmountType: INCLUSIVE
+                    PurchasesDefaultLineAmountType: INCLUSIVE
+                    SalesTrackingCategories: []
+                    PurchasesTrackingCategories: []
+                    PaymentTerms:
+                      Bills:
+                        Day: 15
+                        Type: OFCURRENTMONTH
+                      Sales:
+                        Day: 10
+                        Type: DAYSAFTERBILLMONTH
+                    ContactPersons: []
+                    HasValidationErrors: false
+        "400":
+          description: Validation Error - some data was incorrect returns response of type Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                ErrorNumber: 10
+                Type: ValidationException
+                Message: A validation exception occurred
+                Elements:
+                  - ContactID: 00000000-0000-0000-0000-000000000000
+                    AccountNumber: 12345-ABCD
+                    Name: Buzz Lightyear
+                    EmailAddress: buzzlightyear@email.com
+                    AccountsReceivableTaxType: NONE
+                    AccountsPayableTaxType: INPUT
+                    Addresses:
+                      - AddressType: STREET
+                        AddressLine1: 101 Green St
+                        AddressLine2: 5th floor
+                        City: San Francisco
+                        Region: CA
+                        PostalCode: "94041"
+                        Country: US
+                        AttentionTo: Rod Drury
+                        ValidationErrors: []
+                    Phones:
+                      - PhoneType: MOBILE
+                        PhoneNumber: 555-1212
+                        PhoneAreaCode: "415"
+                        ValidationErrors: []
+                    ContactGroups: []
+                    PaymentTerms:
+                      Bills:
+                        Day: 15
+                        Type: OFCURRENTMONTH
+                        ValidationErrors: []
+                      Sales:
+                        Day: 10
+                        Type: DAYSAFTERBILLMONTH
+                        ValidationErrors: []
+                    ContactPersons: []
+                    HasValidationErrors: true
+                    ValidationErrors:
+                      - Message: The contact name Buzz Lightyear is already assigned to another contact. The contact name must be unique across all active contacts.
+      requestBody:
+        required: true
+        description: Contacts with an array of Contact objects to create in body of request
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Contacts"
+            example:
+              Contacts:
+                - ContactID: 3ff6d40c-af9a-40a3-89ce-3c1556a25591
+                  ContactStatus: ACTIVE
+                  Name: Foo9987
+                  EmailAddress: sid32476@blah.com
+                  BankAccountDetails: ""
+                  Addresses:
+                    - AddressType: STREET
+                      City: ""
+                      Region: ""
+                      PostalCode: ""
+                      Country: ""
+                    - AddressType: POBOX
+                      City: ""
+                      Region: ""
+                      PostalCode: ""
+                      Country: ""
+                  Phones:
+                    - PhoneType: DEFAULT
+                      PhoneNumber: ""
+                      PhoneAreaCode: ""
+                      PhoneCountryCode: ""
+                    - PhoneType: DDI
+                      PhoneNumber: ""
+                      PhoneAreaCode: ""
+                      PhoneCountryCode: ""
+                    - PhoneType: FAX
+                      PhoneNumber: ""
+                      PhoneAreaCode: ""
+                      PhoneCountryCode: ""
+                    - PhoneType: MOBILE
+                      PhoneNumber: 555-1212
+                      PhoneAreaCode: "415"
+                      PhoneCountryCode: ""
+                  UpdatedDateUTC: /Date(1551399321043+0000)/
+                  ContactGroups: []
+                  IsSupplier: false
+                  IsCustomer: false
+                  SalesTrackingCategories: []
+                  PurchasesTrackingCategories: []
+                  PaymentTerms:
+                    Bills:
+                      Day: 15
+                      Type: OFCURRENTMONTH
+                    Sales:
+                      Day: 10
+                      Type: DAYSAFTERBILLMONTH
+                  ContactPersons: []
+    post:
+      security:
+        - OAuth2:
+            - accounting.contacts
+      tags:
+        - Accounting
+      operationId: updateOrCreateContacts
+      summary: Updates or creates one or more contacts in a Xero organisation
+      x-hasAccountingValidationError: true
+      x-example:
+        - phone:
+          is_object: true
+          key: phone
+          keyPascal: Phone
+        - phoneNumber:
+          key: phoneNumber
+          keyPascal: PhoneNumber
+          keySnake: phone_number
+          default: 555-1212
+          object: phone
+        - phoneType:
+          is_last: true
+          nonString: true
+          key: phoneType
+          keyPascal: PhoneType
+          keySnake: phone_type
+          default: MOBILE
+          php: XeroAPI\XeroPHP\Models\Accounting\Phone::PHONE_TYPE_MOBILE
+          node: Phone.PhoneTypeEnum.MOBILE
+          ruby: XeroRuby::Accounting::PhoneType::MOBILE
+          python_string: MOBILE
+          java: com.xero.models.accounting.Phone.PhoneTypeEnum.MOBILE
+          csharp: Phone.PhoneTypeEnum.MOBILE
+          object: phone
+        - phones:
+          is_list: true
+          key: phones
+          keyPascal: Phone
+        - add_phone:
+          is_last: true
+          is_list_add: true
+          key: phones
+          keyPascal: Phones
+          object: phone
+        - contact:
+          is_object: true
+          key: contact
+          keyPascal: Contact
+        - name:
+          key: name
+          keyPascal: Name
+          default: Bruce Banner
+          object: contact
+        - emailAddress:
+          key: emailAddress
+          keyPascal: EmailAddress
+          keySnake: email_address
+          default: hulk@avengers.com
+          object: contact
+        - set_phones:
+          is_last: true
+          is_variable: true
+          nonString: true
+          key: phones
+          keyPascal: Phones
+          default: phones
+          object: contact
+        - contacts:
+          is_object: true
+          key: contacts
+          keyPascal: Contacts
+        - add_contact:
+          is_last: true
+          is_array_add: true
+          key: contacts
+          keyPascal: Contacts
+          java: Contacts
+          csharp: Contact
+          object: contact
+      parameters:
+        - $ref: "#/components/parameters/summarizeErrors"
+        - $ref: "#/components/parameters/idempotencyKey"
+      responses:
+        "200":
+          description: Success - return response of type Contacts array with newly created Contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contacts"
+              example:
+                Id: e997d6d7-6dad-4458-beb8-d9c1bf7f2edf
+                Status: OK
+                ProviderName: Xero API Partner
+                DateTimeUTC: /Date(1551399321121)/
+                Contacts:
+                  - ContactID: 00000000-0000-0000-0000-000000000000
+                    ContactStatus: ACTIVE
+                    Name: Bruce Banner
+                    CompanyNumber: NumberBusiness1234
+                    EmailAddress: bruce@banner.com
+                    BankAccountDetails: ""
+                    Addresses:
+                      - AddressType: STREET
+                        City: ""
+                        Region: ""
+                        PostalCode: ""
+                        Country: ""
+                      - AddressType: POBOX
+                        City: ""
+                        Region: ""
+                        PostalCode: ""
+                        Country: ""
+                    Phones:
+                      - PhoneType: DEFAULT
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                      - PhoneType: DDI
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                      - PhoneType: FAX
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                      - PhoneType: MOBILE
+                        PhoneNumber: 555-1212
+                        PhoneAreaCode: "415"
+                        PhoneCountryCode: ""
+                    UpdatedDateUTC: /Date(1551399321043+0000)/
+                    ContactGroups: []
+                    IsSupplier: false
+                    IsCustomer: false
+                    SalesDefaultLineAmountType: INCLUSIVE
+                    PurchasesDefaultLineAmountType: INCLUSIVE
+                    SalesTrackingCategories: []
+                    PurchasesTrackingCategories: []
+                    PaymentTerms:
+                      Bills:
+                        Day: 15
+                        Type: OFCURRENTMONTH
+                      Sales:
+                        Day: 10
+                        Type: DAYSAFTERBILLMONTH
+                    ContactPersons: []
+                    HasValidationErrors: false
+        "400":
+          description: Validation Error - some data was incorrect returns response of type Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                ErrorNumber: 10
+                Type: ValidationException
+                Message: A validation exception occurred
+                Elements:
+                  - ContactID: 00000000-0000-0000-0000-000000000000
+                    AccountNumber: 12345-ABCD
+                    Name: Buzz Lightyear
+                    EmailAddress: buzzlightyear@email.com
+                    AccountsReceivableTaxType: NONE
+                    AccountsPayableTaxType: INPUT
+                    Addresses:
+                      - AddressType: STREET
+                        AddressLine1: 101 Green St
+                        AddressLine2: 5th floor
+                        City: San Francisco
+                        Region: CA
+                        PostalCode: "94041"
+                        Country: US
+                        AttentionTo: Rod Drury
+                        ValidationErrors: []
+                    Phones:
+                      - PhoneType: MOBILE
+                        PhoneNumber: 555-1212
+                        PhoneAreaCode: "415"
+                        ValidationErrors: []
+                    ContactGroups: []
+                    PaymentTerms:
+                      Bills:
+                        Day: 15
+                        Type: OFCURRENTMONTH
+                        ValidationErrors: []
+                      Sales:
+                        Day: 10
+                        Type: DAYSAFTERBILLMONTH
+                        ValidationErrors: []
+                    ContactPersons: []
+                    HasValidationErrors: true
+                    ValidationErrors:
+                      - Message: The contact name Buzz Lightyear is already assigned to another contact. The contact name must be unique across all active contacts.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Contacts"
+            example:
+              Contacts:
+                - Name: Bruce Banner
+                  EmailAddress: hulk@avengers.com
+                  Phones:
+                    - PhoneType: MOBILE
+                      PhoneNumber: 555-1212
+                      PhoneAreaCode: "415"
+                  PaymentTerms:
+                    Bills:
+                      Day: 15
+                      Type: OFCURRENTMONTH
+                    Sales:
+                      Day: 10
+                      Type: DAYSAFTERBILLMONTH
+  /Contacts/{ContactNumber}:
+    parameters:
+      - $ref: "#/components/parameters/requiredHeader"
+    get:
+      security:
+        - OAuth2:
+            - accounting.contacts
+            - accounting.contacts.read
+      tags:
+        - Accounting
+      operationId: getContactByContactNumber
+      summary: Retrieves a specific contact by contact number in a Xero organisation
+      parameters:
+        - required: true
+          in: path
+          name: ContactNumber
+          x-snake: contact_number
+          description: This field is read only on the Xero contact screen, used to identify contacts in external systems (max length = 50).
+          example: SB2
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success - return response of type Contacts array with a unique Contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contacts"
+              example:
+                Id: 5c83b115-a6e8-4f2a-877f-ba63d009235b
+                Status: OK
+                ProviderName: Xero API Partner
+                DateTimeUTC: /Date(1551462703288)/
+                Contacts:
+                  - ContactID: 8138a266-fb42-49b2-a104-014b7045753d
+                    ContactNumber: SB2
+                    AccountNumber: "1234567"
+                    ContactStatus: ACTIVE
+                    Name: Acme Parts Co.
+                    FirstName: Blake
+                    LastName: Kohler
+                    CompanyNumber: NumberBusiness1234
+                    EmailAddress: bk@krave.co
+                    BankAccountDetails: "12334567"
+                    TaxNumber: 123-22-3456
+                    AccountsReceivableTaxType: TAX003
+                    AccountsPayableTaxType: TAX022
+                    Addresses:
+                      - AddressType: STREET
+                        AddressLine1: 123 Fake Street
+                        City: Vancouver
+                        Region: British Columbia
+                        PostalCode: V6B 2T4
+                        Country: ""
+                        AttentionTo: ""
+                      - AddressType: POBOX
+                        AddressLine1: 1234 Fake Street
+                        City: Vancouver
+                        Region: British Columbia
+                        PostalCode: V6B 2T4
+                        Country: ""
+                        AttentionTo: Blake
+                    Phones:
+                      - PhoneType: DDI
+                        PhoneNumber: 489-44493
+                        PhoneAreaCode: "345"
+                        PhoneCountryCode: "4"
+                      - PhoneType: DEFAULT
+                        PhoneNumber: 408-0914
+                        PhoneAreaCode: "604"
+                        PhoneCountryCode: "1"
+                      - PhoneType: FAX
+                        PhoneNumber: 123-9933
+                        PhoneAreaCode: "123"
+                        PhoneCountryCode: "2"
+                      - PhoneType: MOBILE
+                        PhoneNumber: 999-44
+                        PhoneAreaCode: "234"
+                        PhoneCountryCode: "3"
+                    UpdatedDateUTC: /Date(1551459777193+0000)/
+                    ContactGroups: []
+                    IsSupplier: true
+                    IsCustomer: true
+                    SalesDefaultLineAmountType: INCLUSIVE
+                    PurchasesDefaultLineAmountType: INCLUSIVE
+                    DefaultCurrency: USD
+                    Discount: 13.00
+                    Website: http://www.google.com
+                    BrandingTheme:
+                      BrandingThemeID: dabc7637-62c1-4941-8a6e-ee44fa5090e7
+                      Name: Standard
+                    PurchasesDefaultAccountCode: "660"
+                    SalesDefaultAccountCode: "002"
+                    BatchPayments:
+                      BankAccountNumber: "12334567"
+                      BankAccountName: Citi Bank
+                      Details: biz checking
+                      Code: ""
+                      Reference: ""
+                    Balances:
+                      AccountsReceivable:
+                        Outstanding: 118.90
+                        Overdue: 136.90
+                      AccountsPayable:
+                        Outstanding: -43.60
+                        Overdue: 40.00
+                    PaymentTerms:
+                      Bills:
+                        Day: 12
+                        Type: OFFOLLOWINGMONTH
+                      Sales:
+                        Day: 14
+                        Type: OFCURRENTMONTH
+                    ContactPersons:
+                      - FirstName: Sue
+                        LastName: Johnson
+                        EmailAddress: sue.johnson@krave.com
+                        IncludeInEmails: true
+                    HasAttachments: true
+                    Attachments:
+                      - AttachmentID: 04e0a3e3-b116-456a-9f32-9706f0d33afa
+                        FileName: sample5.jpg
+                        Url: https://api.xero.com/api.xro/2.0/contact/8138a266-fb42-49b2-a104-014b7045753d/Attachments/sample5.jpg
+                        MimeType: image/jpg
+                        ContentLength: 2878711
+                    HasValidationErrors: false
+  /Contacts/{ContactID}:
+    parameters:
+      - $ref: "#/components/parameters/requiredHeader"
+    get:
+      security:
+        - OAuth2:
+            - accounting.contacts
+            - accounting.contacts.read
+      tags:
+        - Accounting
+      operationId: getContact
+      summary: Retrieves a specific contacts in a Xero organisation using a unique contact Id
+      parameters:
+        - $ref: "#/components/parameters/ContactID"
+      responses:
+        "200":
+          description: Success - return response of type Contacts array with a unique Contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contacts"
+              example:
+                Id: 5c83b115-a6e8-4f2a-877f-ba63d009235b
+                Status: OK
+                ProviderName: Xero API Partner
+                DateTimeUTC: /Date(1551462703288)/
+                Contacts:
+                  - ContactID: 8138a266-fb42-49b2-a104-014b7045753d
+                    ContactNumber: SB2
+                    AccountNumber: "1234567"
+                    ContactStatus: ACTIVE
+                    Name: Acme Parts Co.
+                    FirstName: Blake
+                    LastName: Kohler
+                    CompanyNumber: NumberBusiness1234
+                    EmailAddress: bk@krave.co
+                    BankAccountDetails: "12334567"
+                    TaxNumber: 123-22-3456
+                    AccountsReceivableTaxType: TAX003
+                    AccountsPayableTaxType: TAX022
+                    Addresses:
+                      - AddressType: STREET
+                        AddressLine1: 123 Fake Street
+                        City: Vancouver
+                        Region: British Columbia
+                        PostalCode: V6B 2T4
+                        Country: ""
+                        AttentionTo: ""
+                      - AddressType: POBOX
+                        AddressLine1: 1234 Fake Street
+                        City: Vancouver
+                        Region: British Columbia
+                        PostalCode: V6B 2T4
+                        Country: ""
+                        AttentionTo: Blake
+                    Phones:
+                      - PhoneType: DDI
+                        PhoneNumber: 489-44493
+                        PhoneAreaCode: "345"
+                        PhoneCountryCode: "4"
+                      - PhoneType: DEFAULT
+                        PhoneNumber: 408-0914
+                        PhoneAreaCode: "604"
+                        PhoneCountryCode: "1"
+                      - PhoneType: FAX
+                        PhoneNumber: 123-9933
+                        PhoneAreaCode: "123"
+                        PhoneCountryCode: "2"
+                      - PhoneType: MOBILE
+                        PhoneNumber: 999-44
+                        PhoneAreaCode: "234"
+                        PhoneCountryCode: "3"
+                    UpdatedDateUTC: /Date(1551459777193+0000)/
+                    ContactGroups: []
+                    IsSupplier: true
+                    IsCustomer: true
+                    SalesDefaultLineAmountType: INCLUSIVE
+                    PurchasesDefaultLineAmountType: INCLUSIVE
+                    DefaultCurrency: USD
+                    Discount: 13.00
+                    Website: http://www.google.com
+                    BrandingTheme:
+                      BrandingThemeID: dabc7637-62c1-4941-8a6e-ee44fa5090e7
+                      Name: Standard
+                    PurchasesDefaultAccountCode: "660"
+                    SalesDefaultAccountCode: "002"
+                    BatchPayments:
+                      BankAccountNumber: "12334567"
+                      BankAccountName: Citi Bank
+                      Details: biz checking
+                      Code: ""
+                      Reference: ""
+                    Balances:
+                      AccountsReceivable:
+                        Outstanding: 118.90
+                        Overdue: 136.90
+                      AccountsPayable:
+                        Outstanding: -43.60
+                        Overdue: 40.00
+                    PaymentTerms:
+                      Bills:
+                        Day: 12
+                        Type: OFFOLLOWINGMONTH
+                      Sales:
+                        Day: 14
+                        Type: OFCURRENTMONTH
+                    ContactPersons:
+                      - FirstName: Sue
+                        LastName: Johnson
+                        EmailAddress: sue.johnson@krave.com
+                        IncludeInEmails: true
+                    HasAttachments: true
+                    Attachments:
+                      - AttachmentID: 04e0a3e3-b116-456a-9f32-9706f0d33afa
+                        FileName: sample5.jpg
+                        Url: https://api.xero.com/api.xro/2.0/contact/8138a266-fb42-49b2-a104-014b7045753d/Attachments/sample5.jpg
+                        MimeType: image/jpg
+                        ContentLength: 2878711
+                    HasValidationErrors: false
+    post:
+      security:
+        - OAuth2:
+            - accounting.contacts
+      tags:
+        - Accounting
+      operationId: updateContact
+      summary: Updates a specific contact in a Xero organisation
+      x-hasAccountingValidationError: true
+      x-example:
+        - contact:
+          is_object: true
+          key: contact
+          keyPascal: Contact
+        - name:
+          key: name
+          keyPascal: Name
+          default: Thanos
+          object: contact
+        - contactID:
+          is_last: true
+          is_uuid: true
+          key: contactID
+          keyPascal: ContactID
+          default: 00000000-0000-0000-0000-000000000000
+          object: contact
+        - contacts:
+          is_object: true
+          key: contacts
+          keyPascal: Contacts
+        - add_contact:
+          is_last: true
+          is_array_add: true
+          key: contacts
+          keyPascal: Contacts
+          java: Contacts
+          csharp: Contact
+          object: contact
+      parameters:
+        - $ref: "#/components/parameters/idempotencyKey"
+        - $ref: "#/components/parameters/ContactID"
+      responses:
+        "200":
+          description: Success - return response of type Contacts array with an updated Contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contacts"
+              example:
+                Id: 4166b727-c3f0-4881-acd0-d4f7c0e8fcda
+                Status: OK
+                ProviderName: Xero API Partner
+                DateTimeUTC: /Date(1551400031795)/
+                Contacts:
+                  - ContactID: d5be01fb-b09f-4c3a-9c67-e10c2a03412c
+                    ContactStatus: ACTIVE
+                    Name: FooBar
+                    EmailAddress: sid30680@blah.com
+                    BankAccountDetails: ""
+                    Addresses:
+                      - AddressType: STREET
+                        City: ""
+                        Region: ""
+                        PostalCode: ""
+                        Country: ""
+                      - AddressType: POBOX
+                        City: ""
+                        Region: ""
+                        PostalCode: ""
+                        Country: ""
+                    Phones:
+                      - PhoneType: DEFAULT
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                      - PhoneType: DDI
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                      - PhoneType: FAX
+                        PhoneNumber: ""
+                        PhoneAreaCode: ""
+                        PhoneCountryCode: ""
+                      - PhoneType: MOBILE
+                        PhoneNumber: 555-1212
+                        PhoneAreaCode: "415"
+                        PhoneCountryCode: ""
+                    UpdatedDateUTC: /Date(1551400031763+0000)/
+                    ContactGroups: []
+                    IsSupplier: false
+                    IsCustomer: false
+                    SalesDefaultLineAmountType: INCLUSIVE
+                    PurchasesDefaultLineAmountType: INCLUSIVE
+                    SalesTrackingCategories: []
+                    PurchasesTrackingCategories: []
+                    PaymentTerms:
+                      Bills:
+                        Day: 15
+                        Type: OFCURRENTMONTH
+                      Sales:
+                        Day: 10
+                        Type: DAYSAFTERBILLMONTH
+                    ContactPersons: []
+                    HasValidationErrors: false
+        "400":
+          $ref: "#/components/responses/400Error"
+      requestBody:
+        description: an array of Contacts containing single Contact object with properties to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Contacts"
+            example:
+              Contacts:
+                - ContactID: 00000000-0000-0000-0000-000000000000
+                  Name: Thanos
+  /Contacts/{ContactID}/Attachments:
+    parameters:
+      - $ref: "#/components/parameters/requiredHeader"
+    get:
+      security:
+        - OAuth2:
+            - accounting.attachments
+            - accounting.attachments.read
+      tags:
+        - Accounting
+      operationId: getContactAttachments
+      x-hasAccountingValidationError: true
+      summary: Retrieves attachments for a specific contact in a Xero organisation
+      responses:
+        "200":
+          description: Success - return response of type Attachments array with 0 to N Attachment
+          x-isAttachment: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Attachments"
+              example:
+                Id: 0f63b631-a205-496d-b1d2-e6b13a9b497b
+                Status: OK
+                ProviderName: Xero API Partner
+                DateTimeUTC: /Date(1551483890413)/
+                Attachments:
+                  - AttachmentID: 04e0a3e3-b116-456a-9f32-9706f0d33afa
+                    FileName: sample5.jpg
+                    Url: https://api.xero.com/api.xro/2.0/Contacts/8138a266-fb42-49b2-a104-014b7045753d/Attachments/sample5.jpg
+                    MimeType: image/jpg
+                    ContentLength: 2878711
+      parameters:
+        - $ref: "#/components/parameters/ContactID"
+  /Contacts/{ContactID}/Attachments/{AttachmentID}:
+    parameters:
+      - $ref: "#/components/parameters/requiredHeader"
+    get:
+      security:
+        - OAuth2:
+            - accounting.attachments
+            - accounting.attachments.read
+      tags:
+        - Accounting
+      operationId: getContactAttachmentById
+      summary: Retrieves a specific attachment from a specific contact using a unique attachment Id
+      parameters:
+        - $ref: "#/components/parameters/ContactID"
+        - $ref: "#/components/parameters/AttachmentID"
+        - $ref: "#/components/parameters/ContentType"
+      responses:
+        "200":
+          description: Success - return response of attachment for Contact as binary data
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /Contacts/{ContactID}/Attachments/{FileName}:
+    parameters:
+      - $ref: "#/components/parameters/requiredHeader"
+    get:
+      security:
+        - OAuth2:
+            - accounting.attachments
+            - accounting.attachments.read
+      tags:
+        - Accounting
+      operationId: getContactAttachmentByFileName
+      summary: Retrieves a specific attachment from a specific contact by file name
+      parameters:
+        - $ref: "#/components/parameters/ContactID"
+        - $ref: "#/components/parameters/FileName"
+        - $ref: "#/components/parameters/ContentType"
+      responses:
+        "200":
+          description: Success - return response of attachment for Contact as binary data
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+    post:
+      security:
+        - OAuth2:
+            - accounting.attachments
+      tags:
+        - Accounting
+      operationId: updateContactAttachmentByFileName
+      x-hasAccountingValidationError: true
+      parameters:
+        - $ref: "#/components/parameters/idempotencyKey"
+        - $ref: "#/components/parameters/ContactID"
+        - $ref: "#/components/parameters/FileName"
+      responses:
+        "200":
+          description: Success - return response of type Attachments array with an updated Attachment
+          x-isAttachment: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Attachments"
+              example:
+                Id: 8543ae1a-297c-49b8-bf91-47decac452d5
+                Status: OK
+                ProviderName: Provider Name Example
+                DateTimeUTC: /Date(1551485146555)/
+                Attachments:
+                  - AttachmentID: 8b537c1b-bbb5-47fd-857e-370c369dda7c
+                    FileName: HelloWorld.jpg
+                    Url: https://api.xero.com/api.xro/2.0/Contacts/8138a266-fb42-49b2-a104-014b7045753d/Attachments/HelloWorld.jpg
+                    MimeType: image/jpg
+                    ContentLength: 2878711
+        "400":
+          $ref: "#/components/responses/400Error"
+      requestBody:
+        required: true
+        description: Byte array of file in body of request
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: byte
+    put:
+      security:
+        - OAuth2:
+            - accounting.attachments
+      tags:
+        - Accounting
+      operationId: createContactAttachmentByFileName
+      x-hasAccountingValidationError: true
+      parameters:
+        - $ref: "#/components/parameters/idempotencyKey"
+        - $ref: "#/components/parameters/ContactID"
+        - $ref: "#/components/parameters/FileName"
+      responses:
+        "200":
+          description: Success - return response of type Attachments array with an newly created Attachment
+          x-isAttachment: true
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Attachments"
+              example:
+                Id: a5eddf71-86aa-42f5-99e2-0aaf9caf96b6
+                Status: OK
+                ProviderName: Provider Name Example
+                DateTimeUTC: /Date(1551484292734)/
+                Attachments:
+                  - AttachmentID: 27e37b01-6996-4ebe-836c-95fd472ad674
+                    FileName: sample5.jpg
+                    Url: https://api.xero.com/api.xro/2.0/Contacts/8138a266-fb42-49b2-a104-014b7045753d/Attachments/sample5.jpg
+                    MimeType: image/jpg
+                    ContentLength: 2878711
+        "400":
+          $ref: "#/components/responses/400Error"
+      requestBody:
+        required: true
+        description: Byte array of file in body of request
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: byte
+  /Contacts/{ContactID}/CISSettings:
+    parameters:
+      - $ref: "#/components/parameters/requiredHeader"
+    get:
+      security:
+        - OAuth2:
+            - accounting.settings
+            - accounting.settings.read
+      tags:
+        - Accounting
+      operationId: getContactCISSettings
+      summary: Retrieves CIS settings for a specific contact in a Xero organisation
+      parameters:
+        - $ref: "#/components/parameters/ContactID"
+      responses:
+        "200":
+          description: Success - return response of type CISSettings for a specific Contact
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CISSettings"
+              example:
+                CISSetting:
+                  - CISContractorEnabled: true
+                    CISSubContractorEnabled: true
+                    Rate: 100
+  /Contacts/{ContactID}/History:
+    parameters:
+      - $ref: "#/components/parameters/requiredHeader"
+    get:
+      security:
+        - OAuth2:
+            - accounting.contacts
+            - accounting.contacts.read
+      tags:
+        - Accounting
+      operationId: getContactHistory
+      summary: Retrieves history records for a specific contact
+      parameters:
+        - $ref: "#/components/parameters/ContactID"
+      responses:
+        "200":
+          $ref: "#/components/responses/HistoryRetrieved"
+    put:
+      security:
+        - OAuth2:
+            - accounting.contacts
+      tags:
+        - Accounting
+      operationId: createContactHistory
+      summary: Creates a new history record for a specific contact
+      x-hasAccountingValidationError: true
+      x-example:
+        - historyRecord:
+          is_object: true
+          key: historyRecord
+          keyPascal: HistoryRecord
+          keySnake: history_record
+        - Details:
+          is_last: true
+          key: details
+          keyPascal: Details
+          default: Hello World
+          object: historyRecord
+        - historyRecords:
+          is_object: true
+          key: historyRecords
+          keyPascal: HistoryRecords
+        - add_historyRecord:
+          is_last: true
+          is_array_add: true
+          key: historyRecords
+          keyPascal: HistoryRecords
+          keySnake: history_records
+          java: HistoryRecords
+          python: history_record
+          ruby: history_record
+          csharp: HistoryRecord
+          object: historyRecord
+      parameters:
+        - $ref: "#/components/parameters/idempotencyKey"
+        - $ref: "#/components/parameters/ContactID"
+      requestBody:
+        $ref: "#/components/requestBodies/historyRecords"
+      responses:
+        "200":
+          $ref: "#/components/responses/HistoryRecordCreated"
+        "400":
+          $ref: "#/components/responses/400Error"
+  /ContactGroups:
+    parameters:
+      - $ref: "#/components/parameters/requiredHeader"
+    get:
+      security:
+        - OAuth2:
+            - accounting.contacts
+            - accounting.contacts.read
+      tags:
+        - Accounting
+      operationId: getContactGroups
+      summary: Retrieves the contact Id and name of each contact group
+      parameters:
+        - in: query
+          name: where
+          description: Filter by an any element
+          example: Status=="ACTIVE"
+          x-example-csharp: Status==\"ACTIVE\"
+          x-example-java: Status==&quot;&apos; + ContactGroup.StatusEnum.ACTIVE + &apos;&quot;
+          x-example-php: Status==&quot;&apos; . \XeroAPI\XeroPHP\Models\Accounting\ContactGroup::STATUS_ACTIVE . &apos;&quot;
+          x-example-ruby: Status==#{XeroRuby::Accounting::ContactGroup::ACTIVE}
+          schema:
+            type: string
+        - in: query
+          name: order
+          description: Order by an any element
+          example: Name ASC
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success - return response of type Contact Groups array of Contact Group
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactGroups"
+              example:
+                Id: b825df86-1a72-49c9-97dd-36afc7d04bd5
+                Status: OK
+                ProviderName: Provider Name Example
+                DateTimeUTC: /Date(1551746015603)/
+                ContactGroups:
+                  - ContactGroupID: d7a86b80-8dac-4d89-a334-9dcf5753676c
+                    Name: Suppliers
+                    Status: ACTIVE
+                    Contacts: []
+                    HasValidationErrors: false
+                  - ContactGroupID: ab089fd4-012f-4043-a6e4-e7be01e87e50
+                    Name: Old Group84262
+                    Status: ACTIVE
+                    Contacts: []
+                    HasValidationErrors: false
+    put:
+      security:
+        - OAuth2:
+            - accounting.contacts
+      tags:
+        - Accounting
+      operationId: createContactGroup
+      summary: Creates a contact group
+      parameters:
+        - $ref: "#/components/parameters/idempotencyKey"
+      x-hasAccountingValidationError: true
+      x-example:
+        - contact:
+          is_object: true
+          key: contactGroup
+          keyPascal: ContactGroup
+          keySnake: contact_group
+        - name:
+          is_last: true
+          key: name
+          keyPascal: Name
+          default: VIPs
+          object: contactGroup
+        - contactGroups:
+          is_object: true
+          key: contactGroups
+          keyPascal: ContactGroups
+        - add_ContactGroup:
+          is_last: true
+          is_array_add: true
+          key: contactGroups
+          keyPascal: ContactGroups
+          keySnake: contact_groups
+          java: ContactGroups
+          python: contact_group
+          ruby: contact_group
+          csharp: ContactGroup
+          object: contactGroup
+      responses:
+        "200":
+          description: Success - return response of type Contact Groups array of newly created Contact Group
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactGroups"
+              example:
+                Id: 5afe53f9-2271-45b8-9767-88d023b71d34
+                Status: OK
+                ProviderName: Provider Name Example
+                DateTimeUTC: /Date(1551745740920)/
+                ContactGroups:
+                  - ContactGroupID: d7a86b80-8dac-4d89-a334-9dcf5753676c
+                    Name: Suppliers
+                    Status: ACTIVE
+                    Contacts: []
+                    HasValidationErrors: false
+        "400":
+          description: Validation Error - some data was incorrect returns response of type Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                ErrorNumber: 10
+                Type: ValidationException
+                Message: A validation exception occurred
+                Elements:
+                  - ContactGroupID: 00000000-0000-0000-0000-000000000000
+                    Name: Suppliers
+                    Contacts: []
+                    HasValidationErrors: true
+                    ValidationErrors:
+                      - Message: You’ve reached the limit of 100 contact groups.
+      requestBody:
+        description: ContactGroups with an array of names in request body
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactGroups"
+            example:
+              ContactGroups:
+                - Name: VIPs
+  /ContactGroups/{ContactGroupID}:
+    parameters:
+      - $ref: "#/components/parameters/requiredHeader"
+    get:
+      security:
+        - OAuth2:
+            - accounting.contacts
+            - accounting.contacts.read
+      tags:
+        - Accounting
+      operationId: getContactGroup
+      summary: Retrieves a specific contact group by using a unique contact group Id
+      parameters:
+        - $ref: "#/components/parameters/ContactGroupID"
+      responses:
+        "200":
+          description: Success - return response of type Contact Groups array with a specific Contact Group
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactGroups"
+              example:
+                Id: 079c14f6-2c2d-464e-a2c7-0edf7e465723
+                Status: OK
+                ProviderName: Provider Name Example
+                DateTimeUTC: /Date(1551746772976)/
+                ContactGroups:
+                  - ContactGroupID: 17b44ed7-4389-4162-91cb-3dd5766e4e22
+                    Name: Oasis
+                    Status: ACTIVE
+                    Contacts:
+                      - ContactID: 4e1753b9-018a-4775-b6aa-1bc7871cfee3
+                        Name: Noel Gallagher
+                        Addresses: []
+                        Phones: []
+                        ContactGroups: []
+                        ContactPersons: []
+                        HasValidationErrors: false
+                      - ContactID: 430fa14a-f945-44d3-9f97-5df5e28441b8
+                        Name: Liam Gallagher
+                        Addresses: []
+                        Phones: []
+                        ContactGroups: []
+                        ContactPersons: []
+                        HasValidationErrors: false
+                    HasValidationErrors: false
+    post:
+      security:
+        - OAuth2:
+            - accounting.contacts
+      tags:
+        - Accounting
+      operationId: updateContactGroup
+      summary: Updates a specific contact group
+      x-hasAccountingValidationError: true
+      x-example:
+        - contact:
+          is_object: true
+          key: contactGroup
+          keyPascal: ContactGroup
+          keySnake: contact_group
+        - name:
+          is_last: true
+          key: name
+          keyPascal: Name
+          default: Vendor
+          object: contactGroup
+        - contactGroups:
+          is_object: true
+          key: contactGroups
+          keyPascal: ContactGroups
+        - add_ContactGroup:
+          is_last: true
+          is_array_add: true
+          key: contactGroups
+          keyPascal: ContactGroups
+          keySnake: contact_groups
+          java: ContactGroups
+          python: contact_group
+          ruby: contact_group
+          csharp: ContactGroup
+          object: contactGroup
+      parameters:
+        - $ref: "#/components/parameters/idempotencyKey"
+        - $ref: "#/components/parameters/ContactGroupID"
+      responses:
+        "200":
+          description: Success - return response of type Contact Groups array of updated Contact Group
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactGroups"
+              example:
+                Id: b1ba6cdb-1637-4209-bb92-bd0c593f3243
+                Status: OK
+                ProviderName: Provider Name Example
+                DateTimeUTC: /Date(1551746288544)/
+                ContactGroups:
+                  - ContactGroupID: 13f47537-7c1d-4e62-966e-617d76558fc5
+                    Name: Supplier Vendor
+                    Status: ACTIVE
+                    Contacts: []
+                    HasValidationErrors: false
+        "400":
+          $ref: "#/components/responses/400Error"
+      requestBody:
+        description: an array of Contact groups with Name of specific group to update
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactGroups"
+            example:
+              ContactGroups:
+                - Name: Suppliers
+  /ContactGroups/{ContactGroupID}/Contacts:
+    parameters:
+      - $ref: "#/components/parameters/requiredHeader"
+    put:
+      security:
+        - OAuth2:
+            - accounting.contacts
+      tags:
+        - Accounting
+      operationId: createContactGroupContacts
+      summary: Creates contacts to a specific contact group
+      x-hasAccountingValidationError: true
+      x-example:
+        - contact:
+          is_object: true
+          key: contact
+          keyPascal: Contact
+        - contactID:
+          is_last: true
+          is_uuid: true
+          key: contactID
+          keyPascal: ContactID
+          keySnake: contact_id
+          default: 00000000-0000-0000-0000-000000000000
+          object: contact
+        - contacts:
+          is_object: true
+          key: contacts
+          keyPascal: Contacts
+        - add_contact:
+          is_last: true
+          is_array_add: true
+          key: contacts
+          keyPascal: Contacts
+          java: Contacts
+          csharp: Contact
+          object: contact
+      parameters:
+        - $ref: "#/components/parameters/idempotencyKey"
+        - $ref: "#/components/parameters/ContactGroupID"
+      responses:
+        "200":
+          description: Success - return response of type Contacts array of added Contacts
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contacts"
+              example:
+                Id: 99db8024-6895-45c8-a1b5-54805aa8689c
+                Status: OK
+                ProviderName: Provider Name Example
+                DateTimeUTC: /Date(1551747495785)/
+                Contacts:
+                  - ContactID: a3675fc4-f8dd-4f03-ba5b-f1870566bcd7
+                    Addresses: []
+                    Phones: []
+                    ContactGroups: []
+                    ContactPersons: []
+                    HasValidationErrors: false
+                    ValidationErrors: []
+                  - ContactID: 4e1753b9-018a-4775-b6aa-1bc7871cfee3
+                    Addresses: []
+                    Phones: []
+                    ContactGroups: []
+                    ContactPersons: []
+                    HasValidationErrors: false
+                    ValidationErrors: []
+        "400":
+          $ref: "#/components/responses/400Error"
+      requestBody:
+        description: Contacts with array of contacts specifying the ContactID to be added to ContactGroup in body of request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Contacts"
+            example:
+              Contacts:
+                - ContactID: a3675fc4-f8dd-4f03-ba5b-f1870566bcd7
+                - ContactID: 4e1753b9-018a-4775-b6aa-1bc7871cfee3
+    delete:
+      security:
+        - OAuth2:
+            - accounting.contacts
+      tags:
+        - Accounting
+      operationId: deleteContactGroupContacts
+      summary: Deletes all contacts from a specific contact group
+      parameters:
+        - $ref: "#/components/parameters/ContactGroupID"
+      responses:
+        "204":
+          description: Success - return response 204 no content
+          x-isEmpty: true
+  /ContactGroups/{ContactGroupID}/Contacts/{ContactID}:
+    parameters:
+      - $ref: "#/components/parameters/requiredHeader"
+    delete:
+      security:
+        - OAuth2:
+            - accounting.contacts
+      tags:
+        - Accounting
+      operationId: deleteContactGroupContact
+      summary: Deletes a specific contact from a contact group using a unique contact Id
+      parameters:
+        - $ref: "#/components/parameters/ContactGroupID"
+        - $ref: "#/components/parameters/ContactID"
+      responses:
+        "204":
+          description: Success - return response 204 no content
+          x-isEmpty: true
+        "400":
+          $ref: "#/components/responses/400Error"
